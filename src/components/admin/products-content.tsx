@@ -39,11 +39,10 @@ interface AdminProductsContentProps {
     visitorCount: number
     lowStockThreshold: number
     checkinReward: number
-    recentOrders: Array<{ orderId: string; productName: string; amount: string; status: string; createdAt: Date | null }>
     checkinEnabled: boolean
 }
 
-export function AdminProductsContent({ products, stats, shopName, visitorCount, lowStockThreshold, checkinReward, recentOrders, checkinEnabled }: AdminProductsContentProps) {
+export function AdminProductsContent({ products, stats, shopName, visitorCount, lowStockThreshold, checkinReward, checkinEnabled }: AdminProductsContentProps) {
     const { t } = useI18n()
 
     // State
@@ -291,31 +290,6 @@ export function AdminProductsContent({ products, stats, shopName, visitorCount, 
                     </CardContent>
                 </Card>
             </div>
-
-            {/* Recent Orders */}
-            <Card>
-                <CardHeader>
-                    <CardTitle>{t('admin.stats.recentOrders')}</CardTitle>
-                </CardHeader>
-                <CardContent className="space-y-2">
-                    {recentOrders.length === 0 ? (
-                        <div className="text-sm text-muted-foreground">-</div>
-                    ) : (
-                        recentOrders.map(o => (
-                            <div key={o.orderId} className="flex items-center justify-between gap-3 text-sm">
-                                <div className="min-w-0">
-                                    <div className="font-medium truncate">{o.productName}</div>
-                                    <div className="text-xs text-muted-foreground font-mono">{o.orderId}</div>
-                                </div>
-                                <div className="shrink-0 text-right">
-                                    <div className="font-medium">{Number(o.amount)} {t('common.credits')}</div>
-                                    <div className="text-xs text-muted-foreground">{t(`order.status.${o.status}`) || o.status}</div>
-                                </div>
-                            </div>
-                        ))
-                    )}
-                </CardContent>
-            </Card>
 
             {/* Products Table */}
             <div className="flex items-center justify-between">

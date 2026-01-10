@@ -5,7 +5,7 @@ import { getProducts, getDashboardStats, getSetting, getVisitorCount, getRecentO
 import { AdminProductsContent } from "@/components/admin/products-content"
 
 export default async function AdminPage() {
-    const [products, stats, shopName, visitorCount, lowStockThreshold, recentOrders, checkinReward, checkinEnabled] = await Promise.all([
+    const [products, stats, shopName, visitorCount, lowStockThreshold, checkinReward, checkinEnabled] = await Promise.all([
         getProducts(),
         getDashboardStats(),
         (async () => {
@@ -30,14 +30,7 @@ export default async function AdminPage() {
                 return 5
             }
         })(),
-        (async () => {
-            try {
-                return await getRecentOrders(10)
-            } catch {
-                return []
-            }
-        })(),
-
+        // Removed recentOrders query
         (async () => {
             try {
                 const v = await getSetting('checkin_reward')
@@ -73,13 +66,6 @@ export default async function AdminPage() {
             shopName={shopName}
             visitorCount={visitorCount}
             lowStockThreshold={lowStockThreshold}
-            recentOrders={recentOrders.map(o => ({
-                orderId: o.orderId,
-                productName: o.productName,
-                amount: o.amount,
-                status: o.status || 'pending',
-                createdAt: o.createdAt
-            }))}
             checkinReward={checkinReward}
             checkinEnabled={checkinEnabled}
         />
