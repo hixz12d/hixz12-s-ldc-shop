@@ -327,7 +327,7 @@
             "nameLabel": "Product Name",
             "namePlaceholder": "Enter product name",
             "descLabel": "Description",
-            "descPlaceholder": "Enter product description",
+            "descPlaceholder": "Enter product description (Markdown supported)",
             "priceLabel": "Price (Credits)",
             "pricePlaceholder": "0.00",
             "compareAtPriceLabel": "Original Price (optional)",

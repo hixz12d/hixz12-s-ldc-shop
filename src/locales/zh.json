@@ -327,7 +327,7 @@
             "nameLabel": "商品名称",
             "namePlaceholder": "请输入商品名称",
             "descLabel": "商品描述",
-            "descPlaceholder": "请输入商品描述",
+            "descPlaceholder": "请输入商品描述，支持 Markdown",
             "priceLabel": "价格（积分）",
             "pricePlaceholder": "0.00",
             "compareAtPriceLabel": "原价（可选）",
