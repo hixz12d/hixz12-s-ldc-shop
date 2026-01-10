@@ -141,3 +141,59 @@ export async function deleteOrders(orderIds: string[]) {
 
   revalidatePath('/admin/orders')
 }
+
+export async function verifyOrderRefundStatus(orderId: string) {
+  await checkAdmin()
+  if (!orderId) throw new Error("Missing order id")
+
+  const merchantId = process.env.MERCHANT_ID
+  const merchantKey = process.env.MERCHANT_KEY
+  if (!merchantId || !merchantKey) throw new Error("Missing merchant config")
+
+  // Use the API URL from pay url or default
+  const payUrl = process.env.PAY_URL || 'https://credit.linux.do/epay/pay/submit.php'
+
+  let apiUrl = 'https://credit.linux.do/epay/api.php' // Default fallback
+  try {
+    const urlObj = new URL(payUrl)
+    // If payUrl is .../pay/submit.php, api is usually .../api.php
+    // construct api url
+    apiUrl = `${urlObj.protocol}//${urlObj.host}${urlObj.pathname.replace('/pay/submit.php', '/api.php').replace('/submit.php', '/api.php')}`
+    if (!apiUrl.endsWith('api.php')) {
+      apiUrl = `${urlObj.protocol}//${urlObj.host}/epay/api.php`
+    }
+  } catch (e) {
+    // ignore invalid pay url
+  }
+
+  const query = new URLSearchParams({
+    act: 'order',
+    pid: merchantId,
+    key: merchantKey,
+    out_trade_no: orderId
+  })
+
+  try {
+    const res = await fetch(`${apiUrl}?${query.toString()}`)
+    const data = await res.json()
+
+    if (data.code === 1) {
+      // status 0 = Refunded (according to user)
+      if (data.status === 0) {
+        await db.update(orders).set({ status: 'refunded' }).where(eq(orders.orderId, orderId))
+        revalidatePath('/admin/orders')
+        return { success: true, status: data.status, msg: 'Refunded (Verified)' }
+      } else if (data.status === 1) {
+        return { success: true, status: data.status, msg: 'Paid (Not Refunded)' }
+      } else {
+        return { success: true, status: data.status, msg: `Status: ${data.status}` }
+      }
+    } else {
+      return { success: false, error: data.msg || 'Query failed' }
+    }
+
+  } catch (e: any) {
+    console.error('Verify refund error', e)
+    return { success: false, error: e.message }
+  }
+}
