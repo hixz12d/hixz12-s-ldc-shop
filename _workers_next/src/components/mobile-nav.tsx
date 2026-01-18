@@ -3,7 +3,7 @@
 import Link from "next/link"
 import { usePathname } from "next/navigation"
 import { useI18n } from "@/lib/i18n/context"
-import { Home, Package, Settings, User } from "lucide-react"
+import { Compass, Home, Package, Settings, User } from "lucide-react"
 import { cn } from "@/lib/utils"
 
 interface MobileNavProps {
@@ -15,8 +15,6 @@ export function MobileNav({ isLoggedIn, isAdmin }: MobileNavProps) {
     const { t } = useI18n()
     const pathname = usePathname()
 
-    if (!isLoggedIn) return null
-
     const isZh = t('common.myOrders').includes('订单')
     
     const navItems = [
@@ -26,12 +24,12 @@ export function MobileNav({ isLoggedIn, isAdmin }: MobileNavProps) {
             icon: Home,
             active: pathname === "/"
         },
-        {
+        ...(isLoggedIn ? [{
             href: "/orders",
             label: isZh ? "订单" : "Orders",
             icon: Package,
             active: pathname === "/orders" || pathname.startsWith("/order/")
-        },
+        }] : []),
         ...(isAdmin ? [{
             href: "/admin/settings",
             label: t('common.admin'),
@@ -39,11 +37,17 @@ export function MobileNav({ isLoggedIn, isAdmin }: MobileNavProps) {
             active: pathname.startsWith("/admin")
         }] : []),
         {
+            href: "/nav",
+            label: t('common.navigator'),
+            icon: Compass,
+            active: pathname === "/nav" || pathname === "/navi"
+        },
+        ...(isLoggedIn ? [{
             href: "/profile",
             label: isZh ? "个人中心" : "Profile",
             icon: User,
             active: pathname === "/profile"
-        }
+        }] : [])
     ]
 
     return (

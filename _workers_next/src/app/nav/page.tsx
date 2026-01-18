@@ -3,7 +3,7 @@ import { fetchRegistryShops } from "@/lib/registry"
 import { getServerI18n } from "@/lib/i18n/server"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
-import { cn } from "@/lib/utils"
+import { ShopLogo } from "@/components/nav/shop-logo"
 
 export default async function NavigatorPage({ searchParams }: { searchParams?: Promise<{ q?: string | string[] }> }) {
     const { t } = await getServerI18n()
@@ -65,16 +65,7 @@ export default async function NavigatorPage({ searchParams }: { searchParams?: P
                             {filtered.map((shop) => (
                                 <Card key={shop.url} className="group h-full border-border/60 bg-background/80 shadow-sm transition hover:-translate-y-1 hover:shadow-lg">
                                     <CardHeader className="flex flex-row items-start gap-4">
-                                        <div className={cn(
-                                            "flex h-12 w-12 shrink-0 items-center justify-center rounded-xl border border-border/50 bg-muted/40 text-sm font-semibold text-muted-foreground",
-                                            shop.logo ? "bg-transparent" : ""
-                                        )}>
-                                            {shop.logo ? (
-                                                <img src={shop.logo} alt={shop.name} className="h-12 w-12 rounded-xl object-cover" />
-                                            ) : (
-                                                shop.name?.slice(0, 1) || "L"
-                                            )}
-                                        </div>
+                                        <ShopLogo name={shop.name} url={shop.url} logo={shop.logo} />
                                         <div className="flex flex-col gap-1">
                                             <CardTitle className="text-lg leading-tight">{shop.name}</CardTitle>
                                             <p className="text-xs text-muted-foreground break-all">{shop.url}</p>
