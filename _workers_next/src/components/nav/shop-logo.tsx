@@ -1,6 +1,6 @@
 'use client'
 
-import { useMemo, useState } from "react"
+import { useEffect, useMemo, useState } from "react"
 import { cn } from "@/lib/utils"
 
 interface ShopLogoProps {
@@ -9,10 +9,9 @@ interface ShopLogoProps {
     logo?: string | null
 }
 
-function getFaviconUrl(url: string) {
+function getOrigin(url: string) {
     try {
-        const origin = new URL(url).origin
-        return `${origin}/favicon.ico`
+        return new URL(url).origin
     } catch {
         return ""
     }
@@ -20,9 +19,26 @@ function getFaviconUrl(url: string) {
 
 export function ShopLogo({ name, url, logo }: ShopLogoProps) {
     const [error, setError] = useState(false)
+    const [index, setIndex] = useState(0)
     const fallbackLetter = name?.trim()?.slice(0, 1) || "L"
-    const favicon = useMemo(() => getFaviconUrl(url), [url])
-    const src = (logo || "").trim() || favicon
+    const candidates = useMemo(() => {
+        const list: string[] = []
+        const trimmedLogo = (logo || "").trim()
+        if (trimmedLogo) list.push(trimmedLogo)
+        const origin = getOrigin(url)
+        if (origin) {
+            list.push(`${origin}/icon.svg`)
+            list.push(`${origin}/favicon.ico`)
+        }
+        return Array.from(new Set(list))
+    }, [logo, url])
+
+    useEffect(() => {
+        setError(false)
+        setIndex(0)
+    }, [candidates.join("|")])
+
+    const src = candidates[index] || ""
 
     return (
         <div
@@ -37,7 +53,13 @@ export function ShopLogo({ name, url, logo }: ShopLogoProps) {
                     alt={name}
                     className="h-12 w-12 rounded-xl object-cover"
                     referrerPolicy="no-referrer"
-                    onError={() => setError(true)}
+                    onError={() => {
+                        if (index + 1 < candidates.length) {
+                            setIndex(index + 1)
+                        } else {
+                            setError(true)
+                        }
+                    }}
                 />
             ) : (
                 fallbackLetter
