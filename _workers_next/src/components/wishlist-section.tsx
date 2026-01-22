@@ -175,7 +175,10 @@ export function WishlistSection({
                                     <div className="min-w-0">
                                         <div className="font-semibold truncate">{item.title}</div>
                                         {item.description && (
-                                            <p className="text-sm text-muted-foreground mt-1 line-clamp-2 whitespace-pre-wrap">
+                                            <p
+                                                className="text-sm text-muted-foreground mt-1 line-clamp-2 whitespace-pre-wrap cursor-help"
+                                                title={item.description}
+                                            >
                                                 {item.description}
                                             </p>
                                         )}
